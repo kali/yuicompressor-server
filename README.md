@@ -39,11 +39,10 @@ Embedded server running on port 2013. Press any key to stop.
 
 - Post your file to the / endpoint
 - Do not omit the content-type (`text/css` or `text/javascript`) header along with the charset
-- 
 
 ```
 cat mysourcefile.css | curl -X POST --data-binary @- -H "content-type: text/css" -v http://localhost:2013/
- ``
+```
 
 ## What else ?
 
