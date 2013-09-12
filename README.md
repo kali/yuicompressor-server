@@ -19,13 +19,13 @@ For example on our data set (running on a VM with 4 CPUS and 4GB of free memory)
 
 So, who's your daddy now ?
 
-## Building
+## Run it ...
 
-Provided you have a working Scala environment, just type:
+Provided you have a working Java environment, just type:
 
 ```
-./sbt assembly
 ./sbt run
+[....]
 [info] Loading project definition from /yuicompressor-server/project
 [info] Set current project to yui-compressor-server (in build file:yuicompressor-server/)
 [info] Running com.fotopedia.yui.Server
@@ -33,6 +33,12 @@ Provided you have a working Scala environment, just type:
 19:07:20.058 [run-main] INFO  o.e.j.server.handler.ContextHandler - started o.e.j.s.ServletContextHandler{/,null}
 19:07:20.090 [run-main] INFO  o.e.jetty.server.AbstractConnector - Started SelectChannelConnector@0.0.0.0:2013
 Embedded server running on port 2013. Press any key to stop.
+```
+
+## ... or build a fat jar.
+
+```
+./sbt assembly
 ```
 
 ## Usage
