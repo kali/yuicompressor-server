@@ -13,8 +13,8 @@ Instead of minifiying your files in batch (thanks to the `-o -minifiable.js:.js`
 
 For example on our data set (running on a VM with 4 CPUS and 4GB of free memory):
 
-- First run using yuicompressor-server (called with 5 threads): 11s
-- Second run using yuicompressor-server (called with 5 threads): __6s__
+- First run using yuicompressor-server (called with 5 threads): 16s
+- Second run using yuicompressor-server (called with 5 threads): __11s__
 - Run using `-o -minifiable.js:.js`: __57s__
 
 So, who's your daddy now ?
