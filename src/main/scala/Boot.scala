@@ -51,7 +51,7 @@ class App extends unfiltered.filter.Plan {
             val reporter = new MyErrorReporter
             try {
                 if(typ.startsWith("text/javascript")) {
-                    new JavaScriptCompressor(reader, reporter).compress(out, -1, false, true, false, false)
+                    new JavaScriptCompressor(reader, reporter).compress(out, -1, true, true, false, false)
                     Ok ~> ResponseString(out.toString())
                 } else if(typ.startsWith("text/css")) {
                     new CssCompressor(reader).compress(out, -1)
