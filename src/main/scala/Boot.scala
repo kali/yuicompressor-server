@@ -1,35 +1,15 @@
 package com.fotopedia.yui
 
-import unfiltered.request._
-import unfiltered.response._
-import unfiltered.jetty._
-import unfiltered.filter.Intent
+import javax.servlet.http._
 
-import org.slf4j.LoggerFactory
+import org.eclipse.jetty.server.{Server, Handler, Request}
+import org.eclipse.jetty.server.handler.AbstractHandler
+import org.eclipse.jetty.http.HttpHeaders
 
-import org.eclipse.jetty.server.{Server => JettyServer, Connector, Handler}
-import org.eclipse.jetty.server.nio.SelectChannelConnector
 import org.mozilla.javascript.ErrorReporter
 import org.mozilla.javascript.EvaluatorException
 
 import com.yahoo.platform.yui.compressor._
-
-case class HttpSelect(port: Int, host: String) extends Server {
-  type ServerBuilder = HttpSelect
-  val url = "http://%s:%d/" format (host, port)
-  val conn = new SelectChannelConnector()
-  conn.setPort(port)
-  conn.setHost(host)
-  underlying.addConnector(conn)
-}
-
-object Server {
-  val logger = LoggerFactory.getLogger(Server.getClass)
-  def main(args: Array[String]) {
-    val http = HttpSelect(2013, "0.0.0.0")
-    http.filter(new App).run()
-  }
-}
 
 class MyErrorReporter extends ErrorReporter {
     val errorBuffer = scala.collection.mutable.Buffer[String]()
@@ -43,24 +23,35 @@ class MyErrorReporter extends ErrorReporter {
     }
 }
 
-class App extends unfiltered.filter.Plan {
-    def intent = Intent {
-        case req@POST(Path("/") & RequestContentType(typ)) => {
-            val reader = req.reader
-            val out = new java.io.StringWriter()
-            val reporter = new MyErrorReporter
-            try {
-                if(typ.startsWith("text/javascript")) {
-                    new JavaScriptCompressor(reader, reporter).compress(out, -1, true, true, false, false)
-                    Ok ~> ResponseString(out.toString())
-                } else if(typ.startsWith("text/css")) {
-                    new CssCompressor(reader).compress(out, -1)
-                    Ok ~> ResponseString(out.toString())
-                } else
-                    BadRequest ~> ResponseString("invalid content type\n")
-            } catch {
-                case _:Throwable => BadRequest ~> ResponseString(reporter.errorBuffer.mkString)
-            }
+object App extends AbstractHandler {
+
+    def main(args: Array[String]) {
+        val server = new Server(2013);
+        server.setHandler(this)
+        server.start();
+        server.join();
+    }
+
+    override def handle(target:String,baseRequest:Request,req:HttpServletRequest,resp:HttpServletResponse) {
+        val reader = req.getReader
+        val reporter = new MyErrorReporter
+        val typ:String = req.getHeader(HttpHeaders.CONTENT_TYPE)
+        baseRequest.setHandled(true)
+        try {
+            if(typ.startsWith("text/javascript")) {
+                resp.setStatus(HttpServletResponse.SC_OK)
+                resp.setHeader(HttpHeaders.CONTENT_TYPE, "text/javascript")
+                new JavaScriptCompressor(reader, reporter).compress(resp.getWriter, -1, true, true, false, false)
+            } else if(typ.startsWith("text/css")) {
+                resp.setStatus(HttpServletResponse.SC_OK)
+                resp.setHeader(HttpHeaders.CONTENT_TYPE, "text/css")
+                new CssCompressor(reader).compress(resp.getWriter, -1)
+            } else
+                resp.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE)
+        } catch {
+            case _:Throwable =>
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)
+                resp.getWriter.print(reporter.errorBuffer.mkString)
         }
     }
 }
