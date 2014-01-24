@@ -15,7 +15,7 @@ class MyErrorReporter extends ErrorReporter {
     val errorBuffer = scala.collection.mutable.Buffer[String]()
 
     def error(message:String, sourceName:String, line: Int,lineSource:String, lineOffset:Int): Unit = {
-        errorBuffer += "$message line $line:\n$lineSource\n\n"
+        errorBuffer += s"$message line $line:\n$lineSource\n\n"
     }
     def runtimeError(message: String,x$2: String,x$3: Int,x$4: String,x$5: Int): org.mozilla.javascript.EvaluatorException =
         return new EvaluatorException(message)
