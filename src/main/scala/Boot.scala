@@ -41,10 +41,12 @@ object App extends AbstractHandler {
             if(typ.startsWith("text/javascript")) {
                 resp.setStatus(HttpServletResponse.SC_OK)
                 resp.setHeader(HttpHeaders.CONTENT_TYPE, "text/javascript")
+                resp.setCharacterEncoding(req.getCharacterEncoding)
                 new JavaScriptCompressor(reader, reporter).compress(resp.getWriter, -1, true, true, false, false)
             } else if(typ.startsWith("text/css")) {
                 resp.setStatus(HttpServletResponse.SC_OK)
                 resp.setHeader(HttpHeaders.CONTENT_TYPE, "text/css")
+                resp.setCharacterEncoding(req.getCharacterEncoding)
                 new CssCompressor(reader).compress(resp.getWriter, -1)
             } else
                 resp.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE)
